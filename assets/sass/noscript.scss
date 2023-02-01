@@ -6,51 +6,23 @@
 @import 'libs/html-grid';
 
 /*
-	Astral by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+	Forty by Pixelarity
+	pixelarity.com | hello@pixelarity.com
+	License: pixelarity.com/license
 */
 
-/* Wrapper */
+/* Banner */
 
-	#wrapper {
-		opacity: 1 !important;
-	}
-
-/* Nav */
-
-	#nav {
-		a {
-			opacity: 1.0;
-
-			&:before,
+	#banner {
+		body.is-preload & {
 			&:after {
-				display: none;
+				opacity: 0.85;
 			}
 
-			span {
-				top: 0;
-				opacity: 1.0;
-
-				&:after {
-					display: none;
-				}
-			}
-		}
-	}
-
-/* Main */
-
-	#main {
-		background: none;
-		box-shadow: none;
-
-		> .panel {
-			background: #ffffff;
-			margin-bottom: 2em;
-
-			&:last-child {
-				margin-bottom: 0;
+			> .inner {
+				@include vendor('filter', 'none');
+				@include vendor('transform', 'none');
+				opacity: 1;
 			}
 		}
 	}

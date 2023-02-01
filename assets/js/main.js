@@ -1,26 +1,95 @@
 /*
-	Astral by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+	Forty by Pixelarity
+	pixelarity.com | hello@pixelarity.com
+	License: pixelarity.com/license
 */
 
 (function($) {
 
-	var $window = $(window),
+	var	$window = $(window),
 		$body = $('body'),
 		$wrapper = $('#wrapper'),
-		$main = $('#main'),
-		$panels = $main.children('.panel'),
-		$nav = $('#nav'), $nav_links = $nav.children('a');
+		$header = $('#header'),
+		$banner = $('#banner');
 
 	// Breakpoints.
 		breakpoints({
-			xlarge:  [ '1281px',  '1680px' ],
-			large:   [ '981px',   '1280px' ],
-			medium:  [ '737px',   '980px'  ],
-			small:   [ '361px',   '736px'  ],
-			xsmall:  [ null,      '360px'  ]
+			xlarge:    ['1281px',   '1680px'   ],
+			large:     ['981px',    '1280px'   ],
+			medium:    ['737px',    '980px'    ],
+			small:     ['481px',    '736px'    ],
+			xsmall:    ['361px',    '480px'    ],
+			xxsmall:   [null,       '360px'    ]
 		});
+
+	/**
+	 * Applies parallax scrolling to an element's background image.
+	 * @return {jQuery} jQuery object.
+	 */
+	$.fn._parallax = (browser.name == 'ie' || browser.name == 'edge' || browser.mobile) ? function() { return $(this) } : function(intensity) {
+
+		var	$window = $(window),
+			$this = $(this);
+
+		if (this.length == 0 || intensity === 0)
+			return $this;
+
+		if (this.length > 1) {
+
+			for (var i=0; i < this.length; i++)
+				$(this[i])._parallax(intensity);
+
+			return $this;
+
+		}
+
+		if (!intensity)
+			intensity = 0.25;
+
+		$this.each(function() {
+
+			var $t = $(this),
+				on, off;
+
+			on = function() {
+
+				$t.css('background-position', 'center 100%, center 100%, center 0px');
+
+				$window
+					.on('scroll._parallax', function() {
+
+						var pos = parseInt($window.scrollTop()) - parseInt($t.position().top);
+
+						$t.css('background-position', 'center ' + (pos * (-1 * intensity)) + 'px');
+
+					});
+
+			};
+
+			off = function() {
+
+				$t
+					.css('background-position', '');
+
+				$window
+					.off('scroll._parallax');
+
+			};
+
+			breakpoints.on('<=medium', off);
+			breakpoints.on('>medium', on);
+
+		});
+
+		$window
+			.off('load._parallax resize._parallax')
+			.on('load._parallax resize._parallax', function() {
+				$window.trigger('scroll');
+			});
+
+		return $(this);
+
+	};
 
 	// Play initial animations on page load.
 		$window.on('load', function() {
@@ -29,184 +98,238 @@
 			}, 100);
 		});
 
-	// Nav.
-		$nav_links
-			.on('click', function(event) {
+	// Clear transitioning state on unload/hide.
+		$window.on('unload pagehide', function() {
+			window.setTimeout(function() {
+				$('.is-transitioning').removeClass('is-transitioning');
+			}, 250);
+		});
 
-				var href = $(this).attr('href');
+	// Fix: Enable IE-only tweaks.
+		if (browser.name == 'ie' || browser.name == 'edge')
+			$body.addClass('is-ie');
 
-				// Not a panel link? Bail.
-					if (href.charAt(0) != '#'
-					||	$panels.filter(href).length == 0)
-						return;
+	// Scrolly.
+		$('.scrolly').scrolly({
+			offset: function() {
+				return $header.height() - 2;
+			}
+		});
 
-				// Prevent default.
-					event.preventDefault();
-					event.stopPropagation();
+	// Tiles.
+		var $tiles = $('.tiles > article');
 
-				// Change panels.
-					if (window.location.hash != href)
-						window.location.hash = href;
+		$tiles.each(function() {
+
+			var $this = $(this),
+				$image = $this.find('.image'), $img = $image.find('img'),
+				$link = $this.find('.link'),
+				x;
+
+			// Image.
+
+				// Set image.
+					$this.css('background-image', 'url(' + $img.attr('src') + ')');
+
+				// Set position.
+					if (x = $img.data('position'))
+						$image.css('background-position', x);
+
+				// Hide original.
+					$image.hide();
+
+			// Link.
+				if ($link.length > 0) {
+
+					$x = $link.clone()
+						.text('')
+						.addClass('primary')
+						.appendTo($this);
+
+					$link = $link.add($x);
+
+					$link.on('click', function(event) {
+
+						var href = $link.attr('href');
+
+						// Prevent default.
+							event.stopPropagation();
+							event.preventDefault();
+
+						// Target blank?
+							if ($link.attr('target') == '_blank') {
+
+								// Open in new tab.
+									window.open(href);
+
+							}
+
+						// Otherwise ...
+							else {
+
+								// Start transitioning.
+									$this.addClass('is-transitioning');
+									$wrapper.addClass('is-transitioning');
+
+								// Redirect.
+									window.setTimeout(function() {
+										location.href = href;
+									}, 500);
+
+							}
+
+					});
+
+				}
+
+		});
+
+	// Header.
+		if ($banner.length > 0
+		&&	$header.hasClass('alt')) {
+
+			$window.on('resize', function() {
+				$window.trigger('scroll');
+			});
+
+			$window.on('load', function() {
+
+				$banner.scrollex({
+					bottom:		$header.height() + 10,
+					terminate:	function() { $header.removeClass('alt'); },
+					enter:		function() { $header.addClass('alt'); },
+					leave:		function() { $header.removeClass('alt'); $header.addClass('reveal'); }
+				});
+
+				window.setTimeout(function() {
+					$window.triggerHandler('scroll');
+				}, 100);
 
 			});
 
-	// Panels.
+		}
 
-		// Initialize.
-			(function() {
+	// Banner.
+		$banner.each(function() {
 
-				var $panel, $link;
+			var $this = $(this),
+				$image = $this.find('.image'), $img = $image.find('img');
 
-				// Get panel, link.
-					if (window.location.hash) {
+			// Parallax.
+				$this._parallax(0.275);
 
-				 		$panel = $panels.filter(window.location.hash);
-						$link = $nav_links.filter('[href="' + window.location.hash + '"]');
+			// Image.
+				if ($image.length > 0) {
 
-					}
+					// Set image.
+						$this.css('background-image', 'url(' + $img.attr('src') + ')');
 
-				// No panel/link? Default to first.
-					if (!$panel
-					||	$panel.length == 0) {
+					// Hide original.
+						$image.hide();
 
-						$panel = $panels.first();
-						$link = $nav_links.first();
+				}
 
-					}
+		});
 
-				// Deactivate all panels except this one.
-					$panels.not($panel)
-						.addClass('inactive')
-						.hide();
+	// Menu.
+		var $menu = $('#menu'),
+			$menuInner;
 
-				// Activate link.
-					$link
-						.addClass('active');
+		$menu.wrapInner('<div class="inner"></div>');
+		$menuInner = $menu.children('.inner');
+		$menu._locked = false;
 
-				// Reset scroll.
-					$window.scrollTop(0);
+		$menu._lock = function() {
 
-			})();
+			if ($menu._locked)
+				return false;
 
-		// Hashchange event.
-			$window.on('hashchange', function(event) {
+			$menu._locked = true;
 
-				var $panel, $link;
+			window.setTimeout(function() {
+				$menu._locked = false;
+			}, 350);
 
-				// Get panel, link.
-					if (window.location.hash) {
+			return true;
 
-				 		$panel = $panels.filter(window.location.hash);
-						$link = $nav_links.filter('[href="' + window.location.hash + '"]');
+		};
 
-						// No target panel? Bail.
-							if ($panel.length == 0)
-								return;
+		$menu._show = function() {
 
-					}
+			if ($menu._lock())
+				$body.addClass('is-menu-visible');
 
-				// No panel/link? Default to first.
-					else {
+		};
 
-						$panel = $panels.first();
-						$link = $nav_links.first();
+		$menu._hide = function() {
 
-					}
+			if ($menu._lock())
+				$body.removeClass('is-menu-visible');
 
-				// Deactivate all panels.
-					$panels.addClass('inactive');
+		};
 
-				// Deactivate all links.
-					$nav_links.removeClass('active');
+		$menu._toggle = function() {
 
-				// Activate target link.
-					$link.addClass('active');
+			if ($menu._lock())
+				$body.toggleClass('is-menu-visible');
 
-				// Set max/min height.
-					$main
-						.css('max-height', $main.height() + 'px')
-						.css('min-height', $main.height() + 'px');
+		};
 
-				// Delay.
-					setTimeout(function() {
+		$menuInner
+			.on('click', function(event) {
+				event.stopPropagation();
+			})
+			.on('click', 'a', function(event) {
 
-						// Hide all panels.
-							$panels.hide();
+				var href = $(this).attr('href');
 
-						// Show target panel.
-							$panel.show();
+				event.preventDefault();
+				event.stopPropagation();
 
-						// Set new max/min height.
-							$main
-								.css('max-height', $panel.outerHeight() + 'px')
-								.css('min-height', $panel.outerHeight() + 'px');
+				// Hide.
+					$menu._hide();
 
-						// Reset scroll.
-							$window.scrollTop(0);
-
-						// Delay.
-							window.setTimeout(function() {
-
-								// Activate target panel.
-									$panel.removeClass('inactive');
-
-								// Clear max/min height.
-									$main
-										.css('max-height', '')
-										.css('min-height', '');
-
-								// IE: Refresh.
-									$window.triggerHandler('--refresh');
-
-								// Unlock.
-									locked = false;
-
-							}, (breakpoints.active('small') ? 0 : 500));
-
+				// Redirect.
+					window.setTimeout(function() {
+						window.location.href = href;
 					}, 250);
 
 			});
 
-	// IE: Fixes.
-		if (browser.name == 'ie') {
+		$menu
+			.appendTo($body)
+			.on('click', function(event) {
 
-			// Fix min-height/flexbox.
-				$window.on('--refresh', function() {
+				event.stopPropagation();
+				event.preventDefault();
 
-					$wrapper.css('height', 'auto');
+				$body.removeClass('is-menu-visible');
 
-					window.setTimeout(function() {
+			})
+			.append('<a class="close" href="#menu">Close</a>');
 
-						var h = $wrapper.height(),
-							wh = $window.height();
+		$body
+			.on('click', 'a[href="#menu"]', function(event) {
 
-						if (h < wh)
-							$wrapper.css('height', '100vh');
+				event.stopPropagation();
+				event.preventDefault();
 
-					}, 0);
+				// Toggle.
+					$menu._toggle();
 
-				});
+			})
+			.on('click', function(event) {
 
-				$window.on('resize load', function() {
-					$window.triggerHandler('--refresh');
-				});
+				// Hide.
+					$menu._hide();
 
-			// Fix intro pic.
-				$('.panel.intro').each(function() {
+			})
+			.on('keydown', function(event) {
 
-					var $pic = $(this).children('.pic'),
-						$img = $pic.children('img');
+				// Hide on escape.
+					if (event.keyCode == 27)
+						$menu._hide();
 
-					$pic
-						.css('background-image', 'url(' + $img.attr('src') + ')')
-						.css('background-size', 'cover')
-						.css('background-position', 'center');
-
-					$img
-						.css('visibility', 'hidden');
-
-				});
-
-		}
+			});
 
 })(jQuery);
