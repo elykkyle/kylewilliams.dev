@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploy
-        uses: reggionick/s3-deploy@v3
+        uses: reggionick/s3-deploy@v4
         with:
           folder: src
           bucket: ${{ secrets.S3_BUCKET }}
