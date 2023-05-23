@@ -4,7 +4,7 @@ This is the repo for my personal site. Written simply in HTML and CSS.
 
 **Link to project:** <https://kylewilliams.dev/>
 
-![screenshot of kylewilliams.dev](/images/kylewilliamsdev.png)
+![screenshot of kylewilliams.dev](/src/images/kylewilliamsdev.png)
 
 ## How It's Made
 
