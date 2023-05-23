@@ -2,6 +2,10 @@
 
 variables declared here - these are the colors for our pages, as well as the font stacks and sizes. */
 
+.fake{
+  color: white;
+}
+
 :root {
   --black: #022a44;
   --lapislazuli: #355c7d;
