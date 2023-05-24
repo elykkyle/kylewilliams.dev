@@ -20,3 +20,4 @@ jobs:
     - name: Copy files to the production website with the AWS CLI
       run: |
         aws s3 sync ./src s3://kylewilliams.dev --delete --follow-symlinks
+        aws cloudfront create-invalidation --distribution-id E3V9DX7RNBMN1W --paths "/"
