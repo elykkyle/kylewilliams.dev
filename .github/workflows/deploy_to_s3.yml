@@ -1,20 +1,22 @@
 name: deploy-to-prod
 on: [push]
 jobs:
-  run:
+  deploy:
+    name: Upload to Amazon S3
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_S3_BUCKET: kylewilliams.dev
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-      S3_SOURCE_DIR: 'src'
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-
-      - name: S3/CloudFront Deploy
-        uses: staevs/s3-deploy-action@v1.2.2
-        if: success()
-        with:
-          args: --follow-symlinks --delete --no-progress
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure AWS credentials from Production account
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::784714698706:role/github-action-kylewiliams.dev
+        role-session-name: sync-gh-to-s3
+        aws-region: us-east-2
+    - name: Copy files to the production website with the AWS CLI
+      run: |
+        aws s3 sync ./src s3://my-s3-prod-website-bucket --delete --follow-symlinks
