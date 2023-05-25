@@ -1,5 +1,8 @@
 name: deploy-to-prod
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   deploy:
     name: Upload to Amazon S3
