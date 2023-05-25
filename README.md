@@ -1,6 +1,10 @@
 # My Personal Site
 
 This is the repo for my personal site. Written simply in HTML and CSS.
+- Site is hosted on AWS as a static site served from an S3 bucket.
+- DNS provided by AWS Route 53.
+- HTTPS provided by CloudFront with SSL Cert for domain.
+- GitHub Actions automatically syncs changes to repo to S3 bucket and invalidates CloudFront cache.
 
 **Link to project:** <https://kylewilliams.dev/>
 
