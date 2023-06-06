@@ -20,7 +20,7 @@ jobs:
         role-to-assume: arn:aws:iam::784714698706:role/github-action-kylewiliams.dev
         role-session-name: sync-gh-to-s3
         aws-region: us-east-2
-    - name: Copy files to the production website with the AWS CLI
+    - name: Copy files to the production website with the AWS CLI and invalidate cloudfront
       run: |
         aws s3 sync ./src s3://kylewilliams.dev --delete --follow-symlinks
         aws cloudfront create-invalidation --distribution-id E3V9DX7RNBMN1W --paths "/*"
