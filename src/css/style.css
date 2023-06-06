@@ -80,7 +80,6 @@ img {
 
 #intro {
   padding: 4rem 1rem 10rem 1rem;
-  padding-bottom: 10rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -105,6 +104,19 @@ img {
 
 #intro h2 {
   font-size: 4rem;
+}
+
+#hit-count {
+  padding: 0 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 1.25rem;
+}
+
+#visitor-count {
+  font-family: var(--mono);
+  color: var(--black);
+  background-color: var(--white);
 }
 
 /* contact section */
