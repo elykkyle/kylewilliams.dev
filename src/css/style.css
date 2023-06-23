@@ -293,6 +293,63 @@ footer ul {
   width: 160px;
 }
 
+/* Resume page */
+#resume {
+  padding: 0.5rem 2rem 10rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+#resume h2 {
+  margin: 0.5rem 0;
+}
+
+#resume p {
+  margin: 0.5rem 0;
+}
+
+.skills-certs-wrapper {
+  padding-top: 2rem;
+  display: flex
+}
+.skills, .certifications {
+  display: flex;
+  flex-direction: column;
+  flex: 50%;
+}
+
+.skills-certs-wrapper ul {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex: 50%;
+  margin-top: 0.5em;
+}
+
+.work-item {
+  display: flex;
+  /* flex-direction: column; */
+}
+
+.work-item-header-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 25%;
+  max-width: 25%;
+}
+
+.work-item-header-wrapper > * {
+  margin-bottom: 0;
+}
+
+.education * {
+  margin: 0.7rem 0;
+}
+
+.education h3 {
+  margin-top: 1rem;
+}
+
+
 @media (min-width: 550px) {
   article {
     display: grid;
@@ -332,6 +389,19 @@ footer ul {
   }
   #projects .reverse ul {
     justify-content: flex-start;
+  }
+
+  .work-item {
+    flex-direction: column;
+  }
+  .work-item ul {
+    margin: .5rem 0 1rem 0;
+  }
+  .work-item-header-wrapper {
+    max-width: 100%;
+  }
+  .work-item-header-wrapper > * {
+    margin: .25rem 0;
   }
 }
 
