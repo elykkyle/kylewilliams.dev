@@ -25,3 +25,7 @@ provider "aws" {
 resource "random_id" "s3" {
   byte_length = 1
 }
+
+resource "aws_s3_bucket" "website" {
+  bucket = "kyle.mn-${random_id.s3.id}"
+}
